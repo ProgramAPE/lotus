@@ -173,11 +173,11 @@ var sealBenchCmd = &cli.Command{
 			if err != nil {
 				return err
 			}
-			defer func() {
-				if err := os.RemoveAll(tsdir); err != nil {
-					log.Warn("remove all: ", err)
-				}
-			}()
+			//defer func() {
+			//	if err := os.RemoveAll(tsdir); err != nil {
+			//		log.Warn("remove all: ", err)
+			//	}
+			//}()
 
 			// TODO: pretty sure this isnt even needed?
 			if err := os.MkdirAll(tsdir, 0775); err != nil {
@@ -292,6 +292,16 @@ var sealBenchCmd = &cli.Command{
 			SectorSize:     sectorSize,
 			SealingResults: sealTimings,
 		}
+
+		println("lotus --bench ")
+		for i := abi.SectorNumber(1); i <= abi.SectorNumber(c.Int("num-sectors")); i++ {
+			sid := abi.SectorID{
+				Miner:  mid,
+				Number: i,
+			}
+			submitQ(sbfs, sid)
+		}
+		time.Sleep(30* time.Second)
 
 		if !c.Bool("skip-commit2") {
 			log.Info("generating winning post candidates")
