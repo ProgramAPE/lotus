@@ -3,7 +3,6 @@ package sectorstorage
 import (
 	"context"
 	"fmt"
-	"os"
 	"path/filepath"
 
 	"golang.org/x/xerrors"
@@ -64,22 +63,22 @@ func (m *Manager) CheckProvable(ctx context.Context, spt abi.RegisteredSealProof
 
 			addCachePathsForSectorSize(toCheck, lp.Cache, ssize)
 
-			for p, sz := range toCheck {
-				st, err := os.Stat(p)
-				if err != nil {
-					log.Warnw("CheckProvable Sector FAULT: sector file stat error", "sector", sector, "sealed", lp.Sealed, "cache", lp.Cache, "file", p, "err", err)
-					bad = append(bad, sector)
-					return nil
-				}
-
-				if sz != 0 {
-					if st.Size() != int64(ssize)*sz {
-						log.Warnw("CheckProvable Sector FAULT: sector file is wrong size", "sector", sector, "sealed", lp.Sealed, "cache", lp.Cache, "file", p, "size", st.Size(), "expectSize", int64(ssize)*sz)
-						bad = append(bad, sector)
-						return nil
-					}
-				}
-			}
+			//for p, sz := range toCheck {
+			//	st, err := os.Stat(p)
+			//	if err != nil {
+			//		log.Warnw("CheckProvable Sector FAULT: sector file stat error", "sector", sector, "sealed", lp.Sealed, "cache", lp.Cache, "file", p, "err", err)
+			//		bad = append(bad, sector)
+			//		return nil
+			//	}
+			//
+			//	if sz != 0 {
+			//		if st.Size() != int64(ssize)*sz {
+			//			log.Warnw("CheckProvable Sector FAULT: sector file is wrong size", "sector", sector, "sealed", lp.Sealed, "cache", lp.Cache, "file", p, "size", st.Size(), "expectSize", int64(ssize)*sz)
+			//			bad = append(bad, sector)
+			//			return nil
+			//		}
+			//	}
+			//}
 
 			return nil
 		}()
