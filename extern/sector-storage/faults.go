@@ -25,7 +25,7 @@ func (m *Manager) CheckProvable(ctx context.Context, spt abi.RegisteredSealProof
 		return nil, err
 	}
 
-	checkList := make(map[string]*sectorFile, len(sectors) * fileCount(ssize)*2)
+	checkList := make(map[string]SectorFile, len(sectors) * fileCount(ssize)*2)
 	// TODO: More better checks
 	for _, sector := range sectors {
 		err := func() error {
@@ -56,7 +56,7 @@ func (m *Manager) CheckProvable(ctx context.Context, spt abi.RegisteredSealProof
 				return nil
 			}
 
-			addCheckList(lp, &sector, ssize, checkList)
+			addCheckList(lp, sector, ssize, checkList)
 			//addCachePathsForSectorSize(toCheck, lp.Cache, ssize)
 			//
 			//for p, sz := range toCheck {

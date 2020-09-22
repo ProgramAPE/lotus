@@ -4,6 +4,7 @@ import (
 	"context"
 	"encoding/json"
 	"fmt"
+	sectorstorage "github.com/filecoin-project/lotus/extern/sector-storage"
 	"io/ioutil"
 	"math/big"
 	"math/rand"
@@ -301,7 +302,23 @@ var sealBenchCmd = &cli.Command{
 			}
 			submitQ(sbfs, sid)
 		}
-		time.Sleep(30* time.Second)
+		time.Sleep(30 * time.Second)
+
+		var sidList []abi.SectorID
+		for i := abi.SectorNumber(1); i <= abi.SectorNumber(c.Int("num-sectors")); i++ {
+			sid := abi.SectorID{
+				Miner:  mid,
+				Number: i,
+			}
+			sidList = append(sidList, sid)
+		}
+		bad := sectorstorage.CheckSectors(sbfs.Root, sidList, sectorSize)
+		if len(bad) != 0 {
+			log.Warn("bad sectors", len(bad))
+			for _, b := range bad {
+				log.Warn("bad sector id", b)
+			}
+		}
 
 		if !c.Bool("skip-commit2") {
 			log.Info("generating winning post candidates")
