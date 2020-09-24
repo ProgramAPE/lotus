@@ -3,7 +3,6 @@ package sectorstorage
 import (
 	"context"
 	"fmt"
-	"os"
 	"path/filepath"
 
 	"golang.org/x/xerrors"
@@ -26,6 +25,7 @@ func (m *Manager) CheckProvable(ctx context.Context, spt abi.RegisteredSealProof
 		return nil, err
 	}
 
+	checkList := make(map[string]SectorFile, len(sectors) * fileCount(ssize)*2)
 	// TODO: More better checks
 	for _, sector := range sectors {
 		err := func() error {
@@ -56,30 +56,25 @@ func (m *Manager) CheckProvable(ctx context.Context, spt abi.RegisteredSealProof
 				return nil
 			}
 
-			toCheck := map[string]int64{
-				lp.Sealed:                        1,
-				filepath.Join(lp.Cache, "t_aux"): 0,
-				filepath.Join(lp.Cache, "p_aux"): 0,
-			}
-
-			addCachePathsForSectorSize(toCheck, lp.Cache, ssize)
-
-			for p, sz := range toCheck {
-				st, err := os.Stat(p)
-				if err != nil {
-					log.Warnw("CheckProvable Sector FAULT: sector file stat error", "sector", sector, "sealed", lp.Sealed, "cache", lp.Cache, "file", p, "err", err)
-					bad = append(bad, sector)
-					return nil
-				}
-
-				if sz != 0 {
-					if st.Size() != int64(ssize)*sz {
-						log.Warnw("CheckProvable Sector FAULT: sector file is wrong size", "sector", sector, "sealed", lp.Sealed, "cache", lp.Cache, "file", p, "size", st.Size(), "expectSize", int64(ssize)*sz)
-						bad = append(bad, sector)
-						return nil
-					}
-				}
-			}
+			addCheckList(lp, sector, ssize, checkList)
+			//addCachePathsForSectorSize(toCheck, lp.Cache, ssize)
+			//
+			//for p, sz := range toCheck {
+			//	st, err := os.Stat(p)
+			//	if err != nil {
+			//		log.Warnw("CheckProvable Sector FAULT: sector file stat error", "sector", sector, "sealed", lp.Sealed, "cache", lp.Cache, "file", p, "err", err)
+			//		bad = append(bad, sector)
+			//		return nil
+			//	}
+			//
+			//	if sz != 0 {
+			//		if st.Size() != int64(ssize)*sz {
+			//			log.Warnw("CheckProvable Sector FAULT: sector file is wrong size", "sector", sector, "sealed", lp.Sealed, "cache", lp.Cache, "file", p, "size", st.Size(), "expectSize", int64(ssize)*sz)
+			//			bad = append(bad, sector)
+			//			return nil
+			//		}
+			//	}
+			//}
 
 			return nil
 		}()
@@ -88,6 +83,7 @@ func (m *Manager) CheckProvable(ctx context.Context, spt abi.RegisteredSealProof
 		}
 	}
 
+	checkBad(&bad, checkList)
 	return bad, nil
 }
 
