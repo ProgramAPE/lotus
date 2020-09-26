@@ -295,7 +295,7 @@ var sealBenchCmd = &cli.Command{
 		}
 
 		println("lotus --bench ")
-		for i := abi.SectorNumber(1); i <= abi.SectorNumber(c.Int("num-sectors")); i++ {
+		for i := abi.SectorNumber(0); i <= abi.SectorNumber(c.Int("num-sectors")); i++ {
 			sid := abi.SectorID{
 				Miner:  mid,
 				Number: i,
@@ -305,7 +305,7 @@ var sealBenchCmd = &cli.Command{
 		time.Sleep(30 * time.Second)
 
 		var sidList []abi.SectorID
-		for i := abi.SectorNumber(1); i <= abi.SectorNumber(c.Int("num-sectors")); i++ {
+		for i := abi.SectorNumber(0); i <= abi.SectorNumber(c.Int("num-sectors")); i++ {
 			sid := abi.SectorID{
 				Miner:  mid,
 				Number: i,
