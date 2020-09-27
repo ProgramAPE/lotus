@@ -93,13 +93,23 @@ func createPartialFile(maxPieceSize abi.PaddedPieceSize, path string) (*partialF
 }
 
 func openPartialFile(maxPieceSize abi.PaddedPieceSize, path string) (*partialFile, error) {
-	f, err := os.OpenFile(path, os.O_RDWR, 0644) // nolint
-	if err != nil {
-		return nil, xerrors.Errorf("openning partial file '%s': %w", path, err)
+	var f *os.File
+	if fileExists(path) {
+		f2, err := os.OpenFile(path, os.O_RDWR, 0644) // nolint
+		if err != nil {
+			return nil, xerrors.Errorf("openning partial file '%s': %w", path, err)
+		}
+		f = f2
+	} else {
+		f2, err := DownloadFile(path)
+		if err != nil {
+			return nil, xerrors.Errorf("download partial file '%s': %w", path, err)
+		}
+		f = f2
 	}
 
 	var rle rlepluslazy.RLE
-	err = func() error {
+	err := func() error {
 		st, err := f.Stat()
 		if err != nil {
 			return xerrors.Errorf("stat '%s': %w", path, err)
