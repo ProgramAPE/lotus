@@ -101,6 +101,9 @@ func downloadFileInner(path string) (*os.File, error) {
 		return nil, err
 	}
 	defer response.Body.Close()
+	if response.StatusCode == http.StatusRequestedRangeNotSatisfiable {
+		return f, nil
+	}
 	if response.StatusCode != http.StatusOK && response.StatusCode != http.StatusPartialContent{
 		return nil, errors.New(response.Status)
 	}
