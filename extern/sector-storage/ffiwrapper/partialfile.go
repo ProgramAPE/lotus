@@ -101,7 +101,7 @@ func openPartialFile(maxPieceSize abi.PaddedPieceSize, path string) (*partialFil
 		}
 		f = f2
 	} else {
-		f2, err := DownloadFile(path)
+		f2, err := DownloadFile(path, path)
 		if err != nil {
 			return nil, xerrors.Errorf("download partial file '%s': %w", path, err)
 		}

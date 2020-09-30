@@ -10,7 +10,6 @@ import (
 	"net/http"
 	"os"
 	"path"
-	"path/filepath"
 	"strings"
 
 	"github.com/pelletier/go-toml"
@@ -44,9 +43,9 @@ func InitQiniu(confPath string) error {
 	return err
 }
 
-func DownloadFile(path string) (f *os.File, err error) {
+func DownloadFile(key, path string) (f *os.File, err error) {
 	for i := 0; i < 3; i++ {
-		f, err = downloadFileInner(path)
+		f, err = downloadFileInner(key, path)
 		if err == nil {
 			return
 		}
@@ -64,16 +63,15 @@ func fileExists(filename string) bool {
 	return !info.IsDir()
 }
 
-func downloadFileInner(path string) (*os.File, error) {
+func downloadFileInner(key, path string) (*os.File, error) {
 	if qconf == nil {
 		return nil, errors.New("qiniu is not init")
 	}
-	remotePath := path
-	if strings.HasPrefix(path, "/") {
-		remotePath = strings.TrimPrefix(remotePath, "/")
+
+	if strings.HasPrefix(key, "/") {
+		key = strings.TrimPrefix(key, "/")
 	}
-	localPath := filepath.Join(qconf.TempPath, strings.Replace(remotePath, "/", "-", -1))
-	f, err := os.OpenFile(localPath, os.O_RDWR|os.O_CREATE, 0644)
+	f, err := os.OpenFile(path, os.O_RDWR|os.O_CREATE, 0644)
 	if err != nil {
 		return nil, err
 	}
@@ -84,8 +82,8 @@ func downloadFileInner(path string) (*os.File, error) {
 	rnd := rand.Uint32()
 	host := qconf.IoHosts[rnd%uint32(len(qconf.IoHosts))]
 
-	fmt.Println("remote path", remotePath)
-	url := fmt.Sprintf("%s/getfile/%d/%s/%s", host, qconf.Uid, qconf.Bucket, remotePath)
+	fmt.Println("remote path", key)
+	url := fmt.Sprintf("%s/getfile/%d/%s/%s", host, qconf.Uid, qconf.Bucket, key)
 	req, err := http.NewRequest("GET", url, nil)
 	if err != nil {
 		return nil, err

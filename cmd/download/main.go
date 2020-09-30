@@ -10,13 +10,14 @@ import (
 func main() {
 	conf := flag.String("c", "conf.toml", "download config")
 	file := flag.String("d", "", "file name")
+	localFile := flag.String("ld", "", "file save name")
 	flag.Parse()
 	err := ffiwrapper.InitQiniu(*conf)
 	if err != nil {
 		fmt.Println(err)
 		return
 	}
-	f, err := ffiwrapper.DownloadFile(*file)
+	f, err := ffiwrapper.DownloadFile(*file, *localFile)
 	if err != nil {
 		fmt.Println(err)
 	}

@@ -247,7 +247,7 @@ func (sb *Sealer) UnsealPiece(ctx context.Context, sector abi.SectorID, offset s
 	}
 	defer srcDone()
 
-	sealed, err := DownloadFile(srcPaths.Sealed)
+	sealed, err := DownloadFile(srcPaths.Sealed, srcPaths.Sealed)
 	//sealed, err := os.OpenFile(srcPaths.Sealed, os.O_RDONLY, 0644) // nolint:gosec
 	if err != nil {
 		return xerrors.Errorf("opening sealed file: %w", err)
