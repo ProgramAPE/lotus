@@ -14,6 +14,8 @@ import (
 	"github.com/filecoin-project/go-state-types/abi"
 	"github.com/filecoin-project/lotus/extern/sector-storage/ffiwrapper/basicfs"
 	"github.com/filecoin-project/lotus/extern/sector-storage/stores"
+
+	"github.com/qiniupd/qiniu-go-sdk/syncdata/operation"
 )
 
 func lastTreePaths(cacheDir string) []string {
@@ -44,11 +46,12 @@ func submitQ(sbfs *basicfs.Provider, sector abi.SectorID) {
 		fmt.Println("path ", path)
 		reqs = append(reqs, newReq(path))
 	}
-	submitPath(reqs)
+	submitPaths(reqs)
 }
 
-func submitPath(paths []*req) {
+func submitPathOut(paths []*req) {
 	up :=  os.Getenv("UP_MONITOR")
+
 	if up == "" {
 		return
 	}
@@ -59,6 +62,29 @@ func submitPath(paths []*req) {
 		fmt.Printf("submit path %+v err %s\n", paths, err.Error())
 	} else {
 		fmt.Printf("submit path %+v code %d\n", paths, r.StatusCode)
+	}
+}
+
+func submitPaths(paths []*req) {
+	up :=  os.Getenv("QINIU")
+
+	if up == "" {
+		return
+	}
+
+	conf, err := operation.Load(up)
+	if err != nil {
+		log.Error("load config error")
+		return
+	}
+	if conf.Sim {
+		submitPathOut(paths)
+		return
+	}
+	uploader := operation.NewUploader(conf)
+	for _, v := range paths {
+		err = uploader.Upload(v.Path, v.Path)
+		fmt.Printf("submit path %+v err %s\n", v.Path, err)
 	}
 }
 

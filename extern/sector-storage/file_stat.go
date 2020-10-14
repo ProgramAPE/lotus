@@ -1,20 +1,20 @@
 package sectorstorage
 
 import (
-	"bytes"
-	"encoding/json"
+	"errors"
 	"fmt"
-	"net/http"
 	"os"
 	"path/filepath"
 
 	"github.com/filecoin-project/go-state-types/abi"
 	"github.com/filecoin-project/lotus/extern/sector-storage/stores"
+
+	"github.com/qiniupd/qiniu-go-sdk/syncdata/operation"
 )
 
 type SectorFile struct {
 	Sid  abi.SectorID `json:"sid"`
-	Size int64 `json:"size"`
+	Size int64        `json:"size"`
 }
 
 func CheckSectors(root string, sectors []abi.SectorID, ssize abi.SectorSize) []abi.SectorID {
@@ -24,8 +24,8 @@ func CheckSectors(root string, sectors []abi.SectorID, ssize abi.SectorSize) []a
 		sealedPath := filepath.Join(root, stores.FTCache.String(), stores.SectorName(v))
 		cachePath := filepath.Join(root, stores.FTSealed.String(), stores.SectorName(v))
 		addCheckList(stores.SectorPaths{
-			ID: v,
-			Cache: sealedPath,
+			ID:     v,
+			Cache:  sealedPath,
 			Sealed: cachePath,
 		}, v, ssize, checkList)
 	}
@@ -84,33 +84,24 @@ func insert(bad *[]abi.SectorID, sid abi.SectorID) {
 	*bad = append(*bad, sid)
 }
 
-func checkBad(bad *[]abi.SectorID, checkList map[string]SectorFile) {
+func checkBad(bad *[]abi.SectorID, checkList map[string]SectorFile) error {
 	list := getKeys(checkList)
-	up := os.Getenv("UP_MONITOR")
-	if up == "" {
-		return
+	conf_file := os.Getenv("QINIU")
+	if conf_file == "" {
+		return nil
 	}
-	s, _ := json.Marshal(list)
-
-	sr := bytes.NewReader(s)
-	r, err := http.DefaultClient.Post(up+"/stat", "application/json", sr)
+	conf, err := operation.Load(conf_file)
 	if err != nil {
-		log.Warnf("submit path count %d, err %s\n", len(list), err.Error())
-		return
+		log.Error("load conf failed", conf_file, err)
 	}
-	defer r.Body.Close()
-	if r.StatusCode != http.StatusOK {
-		log.Warnf("submit path count %d code %d\n", len(list), r.StatusCode)
-		return
+	if conf.Sim {
+		return nil
 	}
-	var fList []fileStat
-	j := json.NewDecoder(r.Body)
-	err = j.Decode(&fList)
-	if err != nil {
-		log.Warnf("decode path count %d, err %s\n", len(list), err.Error())
-		return
+	lister := operation.NewLister(conf)
+	fList := lister.ListStat(list)
+	if fList == nil {
+		return errors.New("list stats failed")
 	}
-
 	for _, v := range fList {
 		//log.Info("file in list", v.Name, v.Size)
 		p, ok := checkList["/"+v.Name]
@@ -127,6 +118,7 @@ func checkBad(bad *[]abi.SectorID, checkList map[string]SectorFile) {
 			insert(bad, p.Sid)
 		}
 	}
+	return nil
 }
 
 func addCacheFilePathsForSectorSize(checkList map[string]SectorFile, cacheDir string, ssize abi.SectorSize, sid abi.SectorID) {
