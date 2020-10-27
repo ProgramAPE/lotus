@@ -1289,8 +1289,8 @@ github.com/prometheus/procfs v0.0.8/go.mod h1:7Qr8sr6344vo1JqZ6HhLceV9o3AJ1Ff+Gx
 github.com/prometheus/procfs v0.0.11/go.mod h1:lV6e/gmhEcM9IjHGsFOCxxuZ+z1YqCvr4OA4YeYWdaU=
 github.com/prometheus/procfs v0.1.0 h1:jhMy6QXfi3y2HEzFoyuCj40z4OZIIHHPtFyCMftmvKA=
 github.com/prometheus/procfs v0.1.0/go.mod h1:lV6e/gmhEcM9IjHGsFOCxxuZ+z1YqCvr4OA4YeYWdaU=
-github.com/qiniupd/qiniu-go-sdk v0.1.3 h1:zbHY8+FYjehhEMLIIrXIFOEs50dM+ZQpMniTaEpA4q8=
-github.com/qiniupd/qiniu-go-sdk v0.1.3/go.mod h1:wRSFRtGYqk1n4rY1ly9rD1B12RUNsJAcT7Wdm8uNtaQ=
+github.com/qiniupd/qiniu-go-sdk v0.1.5 h1:Ed2lMv9aZ5vwqNNIqSWn0UMY2oWUOP6wJlgtUzJpFIs=
+github.com/qiniupd/qiniu-go-sdk v0.1.5/go.mod h1:wRSFRtGYqk1n4rY1ly9rD1B12RUNsJAcT7Wdm8uNtaQ=
 github.com/raulk/clock v1.1.0 h1:dpb29+UKMbLqiU/jqIJptgLR1nn23HLgMY0sTCDza5Y=
 github.com/raulk/clock v1.1.0/go.mod h1:3MpVxdZ/ODBQDxbN+kzshf5OSZwPjtMDx6BBXBmOeY0=
 github.com/rcrowley/go-metrics v0.0.0-20181016184325-3113b8401b8a/go.mod h1:bCqnVzQkZxMG4s8nGwiZ5l3QUCyqpo9Y+/ZMZ9VjZe4=
