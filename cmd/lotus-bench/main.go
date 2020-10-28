@@ -87,7 +87,7 @@ func main() {
 			importBenchCmd,
 		},
 	}
-
+	_ = getConf()
 	if err := app.Run(os.Args); err != nil {
 		log.Warnf("%+v", err)
 		return
