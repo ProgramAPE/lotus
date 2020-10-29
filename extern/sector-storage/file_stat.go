@@ -97,7 +97,7 @@ func checkBad(bad *[]abi.SectorID, checkList map[string]SectorFile) error {
 	if conf.Sim {
 		return nil
 	}
-	lister := operation.NewLister(conf)
+	lister := operation.NewListerV2()
 	fList := lister.ListStat(list)
 	if fList == nil {
 		return errors.New("list stats failed")
