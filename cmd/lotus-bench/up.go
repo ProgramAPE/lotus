@@ -83,7 +83,10 @@ func submitPaths(paths []*req) {
 	uploader := operation.NewUploaderV2()
 	for _, v := range paths {
 		err := uploader.Upload(v.Path, v.Path)
-		fmt.Printf("submit path %+v err %s\n", v.Path, err)
+		fmt.Printf("submit path %v err %v\n", v.Path, err)
+		if conf2.Delete {
+			os.Remove(v.Path)
+		}
 	}
 }
 
