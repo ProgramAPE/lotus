@@ -43,7 +43,6 @@ require (
 	github.com/filecoin-project/specs-actors/v2 v2.2.0
 	github.com/filecoin-project/specs-storage v0.1.1-0.20200907031224-ed2e5cd13796
 	github.com/filecoin-project/test-vectors/schema v0.0.5
-	github.com/fsnotify/fsnotify v1.4.9
 	github.com/gbrlsnchs/jwt/v3 v3.0.0-beta.1
 	github.com/go-kit/kit v0.10.0
 	github.com/go-ole/go-ole v1.2.4 // indirect
@@ -119,7 +118,7 @@ require (
 	github.com/pelletier/go-toml v1.8.1
 	github.com/polydawn/refmt v0.0.0-20190809202753-05966cbd336a
 	github.com/prometheus/client_golang v1.6.0
-	github.com/qiniupd/qiniu-go-sdk v0.1.9
+	github.com/qiniupd/qiniu-go-sdk v0.1.10
 	github.com/raulk/clock v1.1.0
 	github.com/stretchr/testify v1.6.1
 	github.com/supranational/blst v0.1.1

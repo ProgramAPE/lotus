@@ -14,6 +14,8 @@ import (
 
 	"github.com/filecoin-project/lotus/extern/sector-storage/fsutil"
 	"github.com/filecoin-project/lotus/extern/sector-storage/storiface"
+
+	"github.com/qiniupd/qiniu-go-sdk/syncdata/operation"
 )
 
 const veryLargeRle = 1 << 20
@@ -92,6 +94,16 @@ func createPartialFile(maxPieceSize abi.PaddedPieceSize, path string) (*partialF
 	return openPartialFile(maxPieceSize, path)
 }
 
+// fileExists checks if a file exists and is not a directory before we
+// try using it to prevent further errors.
+func fileExists(filename string) bool {
+	info, err := os.Stat(filename)
+	if os.IsNotExist(err) {
+		return false
+	}
+	return !info.IsDir()
+}
+
 func openPartialFile(maxPieceSize abi.PaddedPieceSize, path string) (*partialFile, error) {
 	var f *os.File
 	if fileExists(path) {
@@ -101,7 +113,8 @@ func openPartialFile(maxPieceSize abi.PaddedPieceSize, path string) (*partialFil
 		}
 		f = f2
 	} else {
-		f2, err := DownloadFile(path, path)
+		d := operation.NewDownloaderV2()
+		f2, err := d.DownloadFile(path, path)
 		if err != nil {
 			return nil, xerrors.Errorf("download partial file '%s': %w", path, err)
 		}

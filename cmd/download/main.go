@@ -3,8 +3,9 @@ package main
 import (
 	"flag"
 	"fmt"
-	"github.com/filecoin-project/lotus/extern/sector-storage/ffiwrapper"
 	"io"
+
+	"github.com/qiniupd/qiniu-go-sdk/syncdata/operation"
 )
 
 func main() {
@@ -12,12 +13,13 @@ func main() {
 	file := flag.String("d", "", "file name")
 	localFile := flag.String("ld", "", "file save name")
 	flag.Parse()
-	err := ffiwrapper.InitQiniu(*conf)
+	c, err := operation.Load(*conf)
 	if err != nil {
 		fmt.Println(err)
 		return
 	}
-	f, err := ffiwrapper.DownloadFile(*file, *localFile)
+	d := operation.NewDownloader(c)
+	f, err := d.DownloadFile(*file, *localFile)
 	if err != nil {
 		fmt.Println(err)
 	}
