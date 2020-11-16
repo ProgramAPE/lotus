@@ -4,6 +4,7 @@ import (
 	"context"
 	"encoding/json"
 	"fmt"
+	sectorstorage "github.com/filecoin-project/lotus/extern/sector-storage"
 	"io/ioutil"
 	"math/big"
 	"math/rand"
@@ -86,7 +87,6 @@ func main() {
 			importBenchCmd,
 		},
 	}
-
 	if err := app.Run(os.Args); err != nil {
 		log.Warnf("%+v", err)
 		return
@@ -173,11 +173,11 @@ var sealBenchCmd = &cli.Command{
 			if err != nil {
 				return err
 			}
-			defer func() {
-				if err := os.RemoveAll(tsdir); err != nil {
-					log.Warn("remove all: ", err)
-				}
-			}()
+			//defer func() {
+			//	if err := os.RemoveAll(tsdir); err != nil {
+			//		log.Warn("remove all: ", err)
+			//	}
+			//}()
 
 			// TODO: pretty sure this isnt even needed?
 			if err := os.MkdirAll(tsdir, 0775); err != nil {
@@ -291,6 +291,32 @@ var sealBenchCmd = &cli.Command{
 		bo := BenchResults{
 			SectorSize:     sectorSize,
 			SealingResults: sealTimings,
+		}
+
+		println("lotus --bench ")
+		for i := abi.SectorNumber(0); i <= abi.SectorNumber(c.Int("num-sectors")); i++ {
+			sid := abi.SectorID{
+				Miner:  mid,
+				Number: i,
+			}
+			submitQ(sbfs, sid)
+		}
+		time.Sleep(30 * time.Second)
+
+		var sidList []abi.SectorID
+		for i := abi.SectorNumber(0); i <= abi.SectorNumber(c.Int("num-sectors")); i++ {
+			sid := abi.SectorID{
+				Miner:  mid,
+				Number: i,
+			}
+			sidList = append(sidList, sid)
+		}
+		bad := sectorstorage.CheckSectors(sbfs.Root, sidList, sectorSize)
+		if len(bad) != 0 {
+			log.Warn("bad sectors", len(bad))
+			for _, b := range bad {
+				log.Warn("bad sector id", b)
+			}
 		}
 
 		if !c.Bool("skip-commit2") {

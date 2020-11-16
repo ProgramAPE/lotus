@@ -7,7 +7,6 @@ import (
 	"sync"
 
 	"github.com/filecoin-project/go-state-types/abi"
-
 	"github.com/filecoin-project/lotus/extern/sector-storage/storiface"
 )
 
@@ -71,12 +70,12 @@ func (b *Provider) AcquireSector(ctx context.Context, id abi.SectorID, existing 
 			<-ch
 		}
 
-		if !allocate.Has(fileType) {
-			if _, err := os.Stat(path); os.IsNotExist(err) {
-				done()
-				return storiface.SectorPaths{}, nil, storiface.ErrSectorNotFound
-			}
-		}
+		//if !allocate.Has(fileType) {
+		//	if _, err := os.Stat(path); os.IsNotExist(err) {
+		//		done()
+		//		return storiface.SectorPaths{}, nil, storiface.ErrSectorNotFound
+		//	}
+		//}
 
 		storiface.SetPathByType(&out, fileType, path)
 	}
