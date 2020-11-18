@@ -359,6 +359,10 @@ func (sb *Sealer) UnsealPiece(ctx context.Context, sector abi.SectorID, offset s
 }
 
 func (sb *Sealer) ReadPiece(ctx context.Context, writer io.Writer, sector abi.SectorID, offset storiface.UnpaddedByteIndex, size abi.UnpaddedPieceSize) (bool, error) {
+	up := os.Getenv("QINIU")
+	if up != "" {
+		return sb.ReadPieceQiniu(ctx, writer, sector, offset, size)
+	}
 	path, done, err := sb.sectors.AcquireSector(ctx, sector, storiface.FTUnsealed, storiface.FTNone, storiface.PathStorage)
 	if err != nil {
 		return false, xerrors.Errorf("acquire unsealed sector path: %w", err)

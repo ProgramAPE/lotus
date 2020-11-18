@@ -1334,6 +1334,10 @@ github.com/qiniupd/qiniu-go-sdk v0.1.9 h1:Xyu5l/4bVvTGd6FSzlzgZNbRP0XF0SSuiOiO43
 github.com/qiniupd/qiniu-go-sdk v0.1.9/go.mod h1:xrBOCYzYVuJnAn77dJ5FGUyVwVt/Rw6jOzi24NZFfCM=
 github.com/qiniupd/qiniu-go-sdk v0.1.10 h1:ZcAXx4YH2nDvLkEF4m69pfCIiNDSwN4QXlCmPPjLWhY=
 github.com/qiniupd/qiniu-go-sdk v0.1.10/go.mod h1:xrBOCYzYVuJnAn77dJ5FGUyVwVt/Rw6jOzi24NZFfCM=
+github.com/qiniupd/qiniu-go-sdk v0.1.12 h1:Ae+/k+dtsEBYt5LFr2FQOVEXhcW2a134fgD6SEMnmzY=
+github.com/qiniupd/qiniu-go-sdk v0.1.12/go.mod h1:xrBOCYzYVuJnAn77dJ5FGUyVwVt/Rw6jOzi24NZFfCM=
+github.com/qiniupd/qiniu-go-sdk v0.1.13 h1:QzIB6s50fhrWdYqcR+td6OdiLzuJCBehIHKkHWLPLVA=
+github.com/qiniupd/qiniu-go-sdk v0.1.13/go.mod h1:xrBOCYzYVuJnAn77dJ5FGUyVwVt/Rw6jOzi24NZFfCM=
 github.com/raulk/clock v1.1.0 h1:dpb29+UKMbLqiU/jqIJptgLR1nn23HLgMY0sTCDza5Y=
 github.com/raulk/clock v1.1.0/go.mod h1:3MpVxdZ/ODBQDxbN+kzshf5OSZwPjtMDx6BBXBmOeY0=
 github.com/rcrowley/go-metrics v0.0.0-20181016184325-3113b8401b8a/go.mod h1:bCqnVzQkZxMG4s8nGwiZ5l3QUCyqpo9Y+/ZMZ9VjZe4=
