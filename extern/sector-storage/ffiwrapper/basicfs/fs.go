@@ -72,12 +72,12 @@ func (b *Provider) AcquireSector(ctx context.Context, id storage.SectorRef, exis
 			<-ch
 		}
 
-		if !allocate.Has(fileType) {
-			if _, err := os.Stat(path); os.IsNotExist(err) {
-				done()
-				return storiface.SectorPaths{}, nil, storiface.ErrSectorNotFound
-			}
-		}
+		//if !allocate.Has(fileType) {
+		//	if _, err := os.Stat(path); os.IsNotExist(err) {
+		//		done()
+		//		return storiface.SectorPaths{}, nil, storiface.ErrSectorNotFound
+		//	}
+		//}
 
 		storiface.SetPathByType(&out, fileType, path)
 	}

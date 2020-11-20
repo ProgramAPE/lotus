@@ -6,6 +6,7 @@ import (
 	"bufio"
 	"bytes"
 	"context"
+	"github.com/qiniupd/qiniu-go-sdk/syncdata/operation"
 	"io"
 	"math/bits"
 	"os"
@@ -245,8 +246,9 @@ func (sb *Sealer) UnsealPiece(ctx context.Context, sector storage.SectorRef, off
 		return xerrors.Errorf("acquire sealed sector paths: %w", err)
 	}
 	defer srcDone()
-
-	sealed, err := os.OpenFile(srcPaths.Sealed, os.O_RDONLY, 0644) // nolint:gosec
+	d := operation.NewDownloaderV2()
+	sealed, err := d.DownloadFile(srcPaths.Sealed, srcPaths.Sealed)
+	//sealed, err := os.OpenFile(srcPaths.Sealed, os.O_RDONLY, 0644) // nolint:gosec
 	if err != nil {
 		return xerrors.Errorf("opening sealed file: %w", err)
 	}
@@ -356,7 +358,13 @@ func (sb *Sealer) UnsealPiece(ctx context.Context, sector storage.SectorRef, off
 	return nil
 }
 
+
 func (sb *Sealer) ReadPiece(ctx context.Context, writer io.Writer, sector storage.SectorRef, offset storiface.UnpaddedByteIndex, size abi.UnpaddedPieceSize) (bool, error) {
+	up := os.Getenv("QINIU")
+	if up != "" {
+		return sb.ReadPieceQiniu(ctx, writer, sector, offset, size)
+	}
+
 	path, done, err := sb.sectors.AcquireSector(ctx, sector, storiface.FTUnsealed, storiface.FTNone, storiface.PathStorage)
 	if err != nil {
 		return false, xerrors.Errorf("acquire unsealed sector path: %w", err)
