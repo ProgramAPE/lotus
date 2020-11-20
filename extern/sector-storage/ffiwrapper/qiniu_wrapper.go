@@ -4,6 +4,7 @@ import (
 	"context"
 	"encoding/binary"
 	"errors"
+	"github.com/filecoin-project/specs-storage/storage"
 	"io"
 	"path/filepath"
 
@@ -80,14 +81,19 @@ func trailer(downloader *operation.Downloader, p string, maxPieceSize int64) (*r
 	return &rle, err
 }
 
-func (sb *Sealer) ReadPieceQiniu(ctx context.Context, writer io.Writer, sector abi.SectorID,
+func (sb *Sealer) ReadPieceQiniu(ctx context.Context, writer io.Writer, sector storage.SectorRef,
 	offset storiface.UnpaddedByteIndex, size abi.UnpaddedPieceSize) (bool, error) {
 	fs, ok := sb.sectors.(*basicfs.Provider)
 	if !ok {
 		return false, errors.New("not basic fs")
 	}
-	p := filepath.Join(fs.Root, storiface.FTUnsealed.String(), storiface.SectorName(sector))
-	maxPieceSize := abi.PaddedPieceSize(sb.ssize)
+	p := filepath.Join(fs.Root, storiface.FTUnsealed.String(), storiface.SectorName(sector.ID))
+	ssize, err := sector.ProofType.SectorSize()
+	if err != nil {
+		return false, err
+	}
+
+	maxPieceSize := abi.PaddedPieceSize(ssize)
 
 	downloader := operation.NewDownloaderV2()
 
